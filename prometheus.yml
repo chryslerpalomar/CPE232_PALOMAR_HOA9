@@ -1,8 +1,10 @@
+---
 - hosts: all
   become: true
   pre_tasks:
 
   - name: install update and repositories (CentOS)
+    tags: always
     yum:
       name: "*"
       update_cache: yes
@@ -11,6 +13,7 @@
     when: ansible_distribution == "CentOS"
 
   - name: install update and repositories (Ubuntu)
+    tags: always
     apt:
       upgrade: yes
       update_cache: yes
@@ -20,30 +23,10 @@
 
 - hosts: ubuntu_servers
   become: true
-  tasks:
-
-  - name: install necessary packages for Prometheus (Ubuntu)
-    apt:
-      name:
-        - prometheus
-        - prometheus-node-exporter
-      state: latest
+  roles:
+    - remote_servers_ubuntu
 
 - hosts: centos_servers
   become: true
-  tasks:
-
-  - name: Create Prometheus YUM Repository File
-    copy:
-      content: |
-        [prometheus]
-        name=Prometheus RPM repository
-        baseurl=https://packagecloud.io/prometheus-rpm/release/el/$releasever/$basearch
-        gpgcheck=0
-        enabled=1
-      dest:/etc/yum.repos.d/prometheus.repo
-
-  - name: install prometheus (CentOS)
-    yum:
-      name: prometheus
-      state: present
+  roles:
+    - remote_servers_centos

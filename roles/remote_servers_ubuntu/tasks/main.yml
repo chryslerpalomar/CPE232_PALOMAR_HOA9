@@ -1,0 +1,19 @@
+  - name: install necessary packages for Prometheus (Ubuntu)
+    apt:
+      name:
+        - prometheus
+      state: latest
+
+  - name: Copying the Prometheus Configuration (Ubuntu)
+    copy:
+      src: prometheus.service
+      dest: /etc/systemd/system/prometheus.service
+      owner: root
+      group: root
+      mode: 777
+
+  - name: Begin/Restart the Prometheus service (Ubuntu)
+    service:
+      name: prometheus
+      state: restarted
+      enabled: yes
